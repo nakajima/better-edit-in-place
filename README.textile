@@ -23,7 +23,7 @@ the attribute to be edited. You can also add the record's id as well, so
 as not to have multiple elements with the same id in the same page. All in,
 it should look something like this:
 
-  <pre><div class="editable" id="list_1_name" rel="/lists/1">This is a list name</div></pre>
+<code><div class="editable" id="list_1_name" rel="/lists/1">This is a list name</div></code>
 
 When the element is clicked, it will be hidden, and an input will appear
 that will allow the user to change the field. You must have an appropriate
