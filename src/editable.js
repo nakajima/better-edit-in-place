@@ -13,7 +13,13 @@ var Editable = Class.create({
     this.setupBehaviors();
   },
   
-  // Tries to make a good guess at model/attribute names.
+  // Tries to make a good guess at model/attribute names. The trouble is that
+  // if you have multiple editable elements that are of the same type, editing
+  // the same attribute, you could end up with duplicate ID attributes. Also ID
+  // attributes shouldn't have brackets in them. As a result, editables can have
+  // unique ID attributes that contain their ID and valid attribute syntax, but 
+  // we have to do some work figuring out what the original resource[attribute]
+  // intention is. There's probably a better way to do this.
   parseField: function() {
     var params = new Array; var values = new Array;
     var levels = new Array;
@@ -36,6 +42,7 @@ var Editable = Class.create({
     return fieldString;
   },
   
+  // Create the editing form for the editable and inserts it after the element.
   setupForm: function() {
     this.editForm = new Element('form', { 'action': this.element.readAttribute('rel'), 'style':'display:none', 'class':'editor' });
     this.editInput = new Element(this.editFieldTag, { 'name':this.field, 'id':('edit_' + this.element.identify()) });
@@ -50,12 +57,14 @@ var Editable = Class.create({
     this.element.insert({after: this.editForm });
   },
 
+  // Sets up event handles for editable.
   setupBehaviors: function() {
     this.element.observe('click', this.edit.bindAsEventListener(this));
     this.editForm.observe('submit', this.save.bindAsEventListener(this));
     this.cancelLink.observe('click', this.cancel.bindAsEventListener(this));
   },
 
+  // Event Handler that activates form and hides element
   edit: function(event) {
     this.element.hide();
     this.editForm.show();
@@ -63,6 +72,7 @@ var Editable = Class.create({
     event.stop();
   },
 
+  // Event handler that makes request to server, then handles a JSON response.
   save: function(event) {
     var form = event.element();
     var pars = form.serialize();
@@ -88,6 +98,7 @@ var Editable = Class.create({
     event.stop();
   },
 
+  // Event handler that restores original editable value and hides form.
   cancel: function(event) {
     this.element.show();
     this.editInput.value = this.value;
@@ -95,6 +106,7 @@ var Editable = Class.create({
     event.stop();
   },
   
+  // Removes editable behavior from an element.
   clobber: function() {
     this.editForm.remove();
     this.element.stopObserving('click');
