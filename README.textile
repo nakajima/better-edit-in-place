@@ -21,9 +21,9 @@ the element's resource url as the element's @rel@ attribute, then give it
 an @id@ attribute that contains the name of the record's model, as well as
 the attribute to be edited. You can also add the record's id as well, so
 as not to have multiple elements with the same id in the same page. All in,
-it should look something like this:
+an editable element's attributes look like this:
 
-<pre><div class="editable" id="list_1_name" rel="/lists/1">This is a list name</div></pre>
+<pre>class="editable" id="list_1_name" rel="/lists/1"</pre>
 
 When the element is clicked, it will be hidden, and an input will appear
 that will allow the user to change the field. You must have an appropriate
