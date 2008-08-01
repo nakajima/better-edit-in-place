@@ -60,6 +60,9 @@ pass a different URL in, you can do that as well:
 
   edit_in_place([@list, @item], :name, :url => weird_item_path(@item))
 
-So that should be it. Let me know if it's not.
+h3. TODO
+
+* Escape key should cancel (simple event handler)
+* Maybe some more options (but not too many)
 
 Copyright (c) 2008 Pat Nakajima
