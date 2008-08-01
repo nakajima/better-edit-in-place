@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Better Edit in Place Test File</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <script src="/prototype.js" type="text/javascript"></script>
+  <script src="/unittest.js" type="text/javascript"></script>
+  <script src="/src/editable.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="/test.css" type="text/css" />
+</head>
+<body>
+<h1>Better Edit in Place test file</h1>
+<p>Test of functions in editable.js</p>
+
+<div id="list_title_1" rel="http://localhost:4567/lists/1" class="editable">This is the list name</div>
+
+<div id="user_first_name_2" rel="http://localhost:4567/users/2" class="editable">This is the user</div>
+
+<!-- Log output -->
+<div id="testlog"> </div>
+
+<!-- Tests follow -->
+<script type="text/javascript" language="javascript" charset="utf-8">
+// <![CDATA[
+
+new Test.Unit.Runner({
+  
+  setup: function() {
+    $$('form').invoke('remove');
+    this.list = new Editable('list_title_1');
+    this.user = new Editable('user_first_name_2');
+  },
+  
+  testShouldGetElement: function() {
+    this.assertEqual($('list_title_1'), this.list.element);
+    this.assertEqual($('user_first_name_2'), this.user.element);
+  },
+  
+  testParseForFieldName: function() {
+    this.assertEqual('list[title]', this.list.parseField());
+    this.assertEqual('user[first_name]', this.user.parseField());
+  },
+  
+  testShouldGetValue: function() {
+    this.assertEqual('This is the list name', this.list.value);
+    this.assertEqual('This is the user', this.user.value);
+  },
+  
+  testShouldCreateEditForm: function() {
+    this.list.editForm.remove();
+    this.list.setupForm();
+    var form = this.list.element.next('form');
+    var save = form.select('input[type=submit]').first();
+    var field = form.findFirstElement()
+    var cancel = form.select('a').first();
+    this.assertEqual(form, this.list.editForm);
+    this.assertEqual(this.list.element.readAttribute('rel'), form.readAttribute('action'));
+    this.assertEqual(this.list.field, field.readAttribute('name'));
+    this.assertEqual(this.list.value, field.value);
+    this.assertNotNull(save);
+    this.assertNotNull(cancel);
+    this.assertEqual('Cancel', cancel.innerHTML);
+  },
+  
+  testShouldHideEditForm: function() {
+    var form = this.list.element.next('form');
+    this.assertNotVisible(form);
+  },
+  
+  testShouldShowEditForm: function() {
+    var form = this.list.element.next('form');
+    this.list.element.stopObserving();
+    form.stopObserving();
+    this.list.setupBehaviors();
+    this.list.edit({ stop: Prototype.K });
+    this.assertVisible(form);
+    this.assertNotVisible(this.list.element);
+  },
+  
+  testShouldSave: function() {
+    var properResult = "This is a new value. Dude.";
+    var form = this.list.element.next('form');
+    this.list.edit({ stop: Prototype.K });
+    this.list.editInput.value = properResult;
+    this.list.save({ element: function() { return form; }, stop: Prototype.K });
+    this.wait(300, function() {
+      this.assertEqual(properResult, this.list.element.innerHTML);
+      this.assertEqual(properResult, this.list.value);
+      this.assertVisible(this.list.element);
+      this.assertNotVisible(this.list.editForm);
+    });
+  },
+  
+  testShouldCancelForm: function() {
+    var form = this.list.element.next('form');
+    this.list.edit({ stop: Prototype.K });
+    this.list.cancel({ stop: Prototype.K });
+    this.assertVisible(this.list.element);
+    this.assertNotVisible(this.list.editForm);
+  },
+  
+  testShouldHandleBehaviors: function() {
+    var form = this.list.element.next('form');
+    
+    Event.simulateMouse('list_title_1', 'click');
+    
+    this.assertNotVisible(this.list.element);
+    this.assertVisible(this.list.editForm);
+    
+    Event.simulateMouse(this.list.cancelLink, 'click');
+    
+    this.assertVisible(this.list.element);
+    this.assertNotVisible(this.list.editForm);
+    
+    Event.simulateMouse('list_title_1', 'click');
+    
+    this.assertNotVisible(this.list.element);
+    this.assertVisible(this.list.editForm);
+    
+    Event.simulateMouse(form, 'submit');
+    
+    this.wait(300, function() {
+      this.assertVisible(this.list.element);
+      this.assertNotVisible(this.list.editForm);
+    });
+  },
+
+  teardown: function() {
+    this.list.clobber();
+    this.user.clobber();
+  }
+  
+});
+  
+// ]]>
+</script>
+</body>
+</html>

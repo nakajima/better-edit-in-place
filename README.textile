@@ -1,0 +1,65 @@
+h1. Better Edit in Place
+
+The default "in_place_editing" plugin for Rails is disappointing. This is my
+solution.
+
+h3. Features
+
+* Support for nested resources
+* RESTful. Just add a line to your @respond_to@ block to render as JSON.
+* Easy to use outside of Rails. Just add a class name and the path as the
+  @rel@ attribute to an element and you're done.
+* Logic lives in the JavaScript (You may consider this a feature or a flaw. I
+  consider it a feature.)
+
+The better-edit-in-place script makes it easy to create AJAX edit-in-place
+fields in a RESTful web app. Note that if your approach isn't RESTful, 
+then this script won't do much for you.
+
+To make an element editable, give it the class name @editable@. Specify 
+the element's resource url as the element's @rel@ attribute, then give it
+an @id@ attribute that contains the name of the record's model, as well as
+the attribute to be edited. You can also add the record's id as well, so
+as not to have multiple elements with the same id in the same page. All in,
+it should look something like this:
+
+  @<div class="editable" id="list_1_name" rel="/lists/1">This is a list name</div>@
+
+When the element is clicked, it will be hidden, and an input will appear
+that will allow the user to change the field. You must have an appropriate
+respond_to set in your controller that renders the record as a JSON response.
+
+A Rails example:
+
+  respond_to do |format|
+    format.html # Whatever
+    format.js { render :json => @list }
+  end
+
+h3. Using it with Rails
+
+If you're using this plugin in a Rails app, you can use the following view
+helper to simplify the markup for your editable element:
+
+  edit_in_place(@list, :name)
+
+By default, the edit-in-place tag will be a @<span>@ element. You can override
+this using the @:tag@ option:
+
+  edit_in_place(@list, :name, :tag => :h1)
+
+h4. Nested Resources
+
+Better Edit in Place also works seamlessly with nested resources. Just pass
+in the resources as an array. This will update an item's @name@ attribute:
+
+  edit_in_place([@list, @item], :name)
+  
+The @list_item_path@ will be determined automatically. If you wish to
+pass a different URL in, you can do that as well:
+
+  edit_in_place([@list, @item], :name, :url => weird_item_path(@item))
+
+So that should be it. Let me know if it's not.
+
+Copyright (c) 2008 Pat Nakajima
