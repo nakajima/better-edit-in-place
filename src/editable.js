@@ -21,19 +21,18 @@ var Editable = Class.create({
   // we have to do some work figuring out what the original resource[attribute]
   // intention is. There's probably a better way to do this.
   parseField: function() {
-    var params = new Array; var values = new Array;
-    var levels = new Array;
-    this.element.readAttribute('rel').scan(/\/(\w+)\//, function(m) { if (!m[1].match(/\d+/)) { params.push(m[1].gsub(/s$/, '')); } });
-    var split = this.elementID.split('_').reject(function(m) { return m.match(/\d+/); });
-    var attrs = $A(split).select(function(m) { return params.include(m); });
-    var fields = split.inject(new Array, function(memo, attr) {
-      if ( attrs.include(attr) ) {
-        memo.push(attr);
+    var resources = new Array; var values = new Array;
+    this.element.readAttribute('rel').scan(/\/(\w+)\//, function(m) { if (!m[1].match(/\d+/)) { resources.push(m[1].gsub(/s$/, '')); } });
+    var tokens = this.elementID.split('_').reject(function(m) { return m.match(/\d+/); });
+    var models = tokens.select(function(m) { return resources.include(m); });
+    var fields = tokens.inject([], function(memo, token) {
+      if ( models.include(token) ) {
+        memo.push(token);
         return memo;
       } else {
-        if ( !attrs.include(memo.last()) || attr == 'id' ) {
-          memo[memo.length - 1] += '_' + attr;
-        } else { memo.push(attr); }
+        if ( !models.include(memo.last()) || token == 'id' ) {
+          memo[memo.length - 1] += '_' + token;
+        } else { memo.push(token); }
         return memo;
       }
     });
