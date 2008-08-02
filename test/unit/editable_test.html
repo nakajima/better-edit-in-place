@@ -93,11 +93,13 @@ new Test.Unit.Runner({
   },
   
   testShouldCancelForm: function() {
-    var form = this.list.element.next('form');
+    var form = this.list.editForm;
     this.list.edit({ stop: Prototype.K });
+    this.list.editInput.value = 'A new value';
     this.list.cancel({ stop: Prototype.K });
     this.assertVisible(this.list.element);
     this.assertNotVisible(this.list.editForm);
+    this.assertEqual(this.list.value, this.list.editInput.value);
   },
   
   testShouldHandleBehaviors: function() {
