@@ -13,32 +13,16 @@ var Editable = Class.create({
     this.setupBehaviors();
   },
   
-  // Tries to make a good guess at model/attribute names. The trouble is that
-  // if you have multiple editable elements that are of the same type, editing
-  // the same attribute, you could end up with duplicate ID attributes. Also ID
-  // attributes shouldn't have brackets in them. As a result, editables can have
-  // unique ID attributes that contain their ID and valid attribute syntax, but 
-  // we have to do some work figuring out what the original resource[attribute]
-  // intention is. There's probably a better way to do this.
-  parseField: function() {
-    var resources = new Array; var values = new Array;
-    this.element.readAttribute('rel').scan(/\/(\w+)\//, function(m) { if (!m[1].match(/\d+/)) { resources.push(m[1].gsub(/s$/, '')); } });
-    var tokens = this.elementID.split('_').reject(function(m) { return m.match(/\d+/); });
-    var models = tokens.select(function(m) { return resources.include(m); });
-    var fields = tokens.inject([], function(memo, token) {
-      if ( models.include(token) ) {
-        memo.push(token);
-        return memo;
-      } else {
-        if ( !models.include(memo.last()) || token == 'id' ) {
-          memo[memo.length - 1] += '_' + token;
-        } else { memo.push(token); }
-        return memo;
-      }
-    });
-    var fieldString = fields.join('[');
-    (fields.length - 1).times(function() { fieldString += ']'; });
-    return fieldString;
+ 	// In order to parse the field correctly, it's necessary that the element
+	// you want to edit in place for have an id of (model_name)_(id)_(field_name).
+	// For example, if you want to edit the "caption" field in a "Photo" model,
+	// your id should be something like "photo_#{@photo.id}_caption".
+	// If you want to edit the "comment_body" field in a "MemberBlogPost" model,
+	// it would be: "member_blog_post_#{@member_blog_post.id}_comment_body"
+ 	parseField: function() {
+		var matches = this.elementID.match(/(.*)_(\d*)_(.*)/);
+    var fieldString = matches[1] + '[' + matches[3] + ']';
+		return fieldString;
   },
   
   // Create the editing form for the editable and inserts it after the element.

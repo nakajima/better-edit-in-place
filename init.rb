@@ -16,7 +16,7 @@ module Nakajima
 
       content_tag(options.delete(:tag), record.send(field), options)
     end
-  end
+  end  
 end
 
 ActionView::Base.send :include, Nakajima::BetterEditInPlace
