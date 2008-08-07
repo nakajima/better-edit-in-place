@@ -63,6 +63,22 @@ new Test.Unit.Runner({
     this.assertEqual('Cancel', cancel.innerHTML);
   },
   
+  testShouldAllowCustomSaveLabels: function() {
+    this.list.editForm.remove();
+    Editable.options.saveText = 'done!'
+    this.list.setupForm();
+    var saveButton = this.list.editForm.select('input[type=submit]').first();
+    this.assertEqual('done!', saveButton.readAttribute('value'));
+  },
+  
+  testShouldAllowCustomCancelLabels: function() {
+    this.list.editForm.remove();
+    Editable.options.cancelText = 'quit!'
+    this.list.setupForm();
+    var cancelLink = this.list.editForm.select('a').first();
+    this.assertEqual('quit!', cancelLink.innerHTML);
+  },
+  
   testShouldIncludeAuthTokenInEditForm: function() {
     this.list.editForm.remove();
     var auth_token = '9a41b076b0feb2dc1e22af58662647934c8cf4a8';
