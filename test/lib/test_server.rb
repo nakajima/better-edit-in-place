@@ -19,6 +19,6 @@ put '/lists/1' do
 end
 
 put '/users/2' do
-  user = { :first_name => params['user[first_name]'] }
+  user = { :user => { :first_name => params['user[first_name]'] } }
   user.to_json
 end

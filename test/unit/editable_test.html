@@ -40,6 +40,10 @@ new Test.Unit.Runner({
   testParseForFieldName: function() {
     this.assertEqual('list[title]', this.list.parseField());
     this.assertEqual('user[first_name]', this.user.parseField());
+    this.assertEqual('list', this.list.modelName);
+    this.assertEqual('title', this.list.fieldName);
+    this.assertEqual('user', this.user.modelName);
+    this.assertEqual('first_name', this.user.fieldName);
   },
   
   testShouldGetValue: function() {

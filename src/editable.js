@@ -20,9 +20,10 @@ var Editable = Class.create({
   // If you want to edit the "comment_body" field in a "MemberBlogPost" model,
   // it would be: "member_blog_post_#{@member_blog_post.id}_comment_body"
   parseField: function() {
-    var matches = this.elementID.match(/(.*)_(\d*)_(.*)/);
-    var fieldString = matches[1] + '[' + matches[3] + ']';
-    return fieldString;
+    var matches = this.elementID.match(/(.*)_\d*_(.*)/);
+    this.modelName = matches[1];
+    this.fieldName = matches[2];
+    return this.modelName + '[' + this.fieldName + ']';
   },
   
   // Create the editing form for the editable and inserts it after the element.
@@ -75,10 +76,10 @@ var Editable = Class.create({
       parameters: pars,
       onSuccess: function(transport) {
         var json = transport.responseText.evalJSON();
-        var attr = this.field.replace(/\w+\[(\w+)\]/, '$1');
-        this.value = json[attr];
-        this.editInput.value = json[attr];
-        this.element.update(json[attr]);
+        if (json[this.modelName]) { this.value = json[this.modelName][this.fieldName]; }
+        else { this.value = json[this.fieldName]; }
+        this.editInput.value = this.value;
+        this.element.update(this.value);
         form.enable();
         this.cancel();
       }.bind(this),
