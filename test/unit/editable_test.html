@@ -13,9 +13,9 @@
 <h1>Better Edit in Place test file</h1>
 <p>Test of functions in editable.js</p>
 
-<div id="list_title_1" rel="http://localhost:4567/lists/1" class="editable">This is the list name</div>
+<div id="list_1_title" rel="http://localhost:4567/lists/1" class="editable">This is the list name</div>
 
-<div id="user_first_name_2" rel="http://localhost:4567/users/2" class="editable">This is the user</div>
+<div id="user_2_first_name" rel="http://localhost:4567/users/2" class="editable">This is the user</div>
 
 <!-- Log output -->
 <div id="testlog"> </div>
@@ -28,13 +28,13 @@ new Test.Unit.Runner({
   
   setup: function() {
     $$('form').invoke('remove');
-    this.list = new Editable('list_title_1');
-    this.user = new Editable('user_first_name_2');
+    this.list = new Editable('list_1_title');
+    this.user = new Editable('user_2_first_name');
   },
   
   testShouldGetElement: function() {
-    this.assertEqual($('list_title_1'), this.list.element);
-    this.assertEqual($('user_first_name_2'), this.user.element);
+    this.assertEqual($('list_1_title'), this.list.element);
+    this.assertEqual($('user_2_first_name'), this.user.element);
   },
   
   testParseForFieldName: function() {
@@ -103,7 +103,7 @@ new Test.Unit.Runner({
   testShouldHandleBehaviors: function() {
     var form = this.list.element.next('form');
     
-    Event.simulateMouse('list_title_1', 'click');
+    Event.simulateMouse('list_1_title', 'click');
     
     this.assertNotVisible(this.list.element);
     this.assertVisible(this.list.editForm);
@@ -113,7 +113,7 @@ new Test.Unit.Runner({
     this.assertVisible(this.list.element);
     this.assertNotVisible(this.list.editForm);
     
-    Event.simulateMouse('list_title_1', 'click');
+    Event.simulateMouse('list_1_title', 'click');
     
     this.assertNotVisible(this.list.element);
     this.assertVisible(this.list.editForm);
