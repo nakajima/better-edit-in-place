@@ -63,6 +63,15 @@ new Test.Unit.Runner({
     this.assertEqual('Cancel', cancel.innerHTML);
   },
   
+  testShouldIncludeAuthTokenInEditForm: function() {
+    this.list.editForm.remove();
+    var auth_token = '9a41b076b0feb2dc1e22af58662647934c8cf4a8';
+    window._token = auth_token;
+    this.list.setupForm();
+    var tokenField = this.list.editForm.getInputs('hidden', 'authenticity_token')[0];
+    this.assertNotNullOrUndefined(tokenField);
+  },
+  
   testShouldHideEditForm: function() {
     var form = this.list.element.next('form');
     this.assertNotVisible(form);

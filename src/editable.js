@@ -26,6 +26,8 @@ var Editable = Class.create({
   },
   
   // Create the editing form for the editable and inserts it after the element.
+  // If window._token is defined, then we add a hidden element that contains the
+  // authenticity_token for the AJAX request.
   setupForm: function() {
     this.editForm = new Element('form', { 'action': this.element.readAttribute('rel'), 'style':'display:none', 'class':'editor' });
     this.editInput = new Element(this.editFieldTag, { 'name':this.field, 'id':('edit_' + this.element.identify()) });
@@ -33,6 +35,13 @@ var Editable = Class.create({
     var saveInput = new Element('input', { 'type':'submit', 'value':'Save' });
     this.cancelLink = new Element('a', { 'href':'#' }); this.cancelLink.update('Cancel');
     var methodInput = new Element('input', { 'type':'hidden', 'value':'put', 'name':'_method' });
+    if (typeof(window._token) != 'undefined') {
+      this.editForm.insert(new Element('input', {
+        type: 'hidden',
+        value: window._token,
+        name: 'authenticity_token'
+      }));
+    }
     this.editForm.insert(this.editInput);
     this.editForm.insert(saveInput);
     this.editForm.insert(this.cancelLink);
