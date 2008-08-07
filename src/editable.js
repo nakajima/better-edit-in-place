@@ -62,15 +62,14 @@ var Editable = Class.create({
     this.element.hide();
     this.editForm.show();
     this.editInput.activate();
-    event.stop();
+    if (event) { event.stop(); }
   },
 
   // Event handler that makes request to server, then handles a JSON response.
   save: function(event) {
-    var form = event.element();
-    var pars = form.serialize();
-    var url = form.readAttribute('action');
-    form.disable();
+    var pars = this.editForm.serialize();
+    var url = this.editForm.readAttribute('action');
+    this.editForm.disable();
     new Ajax.Request(url, {
       method: 'put',
       parameters: pars,
@@ -80,7 +79,8 @@ var Editable = Class.create({
         else { this.value = json[this.fieldName]; }
         this.editInput.value = this.value;
         this.element.update(this.value);
-        form.enable();
+        this.editForm.enable();
+        if (Editable.afterSave) { Editable.afterSave(this); }
         this.cancel();
       }.bind(this),
       onFailure: function(transport) {
@@ -88,7 +88,7 @@ var Editable = Class.create({
         alert("Your change could not be saved.");
       }.bind(this)
     });
-    event.stop();
+    if (event) { event.stop(); }
   },
 
   // Event handler that restores original editable value and hides form.
@@ -96,7 +96,7 @@ var Editable = Class.create({
     this.element.show();
     this.editInput.value = this.value;
     this.editForm.hide();
-    event.stop();
+    if (event) { event.stop(); }
   },
   
   // Removes editable behavior from an element.

@@ -157,6 +157,18 @@ new Test.Unit.Runner({
     });
   },
 
+  testShouldCallAfterSaveCallback: function() {
+    this.called = false;
+    Editable.afterSave = function(editable) {
+      this.called = true;
+      this.assertEqual(this.list, editable);
+    }.bind(this);
+    this.list.save();
+    this.wait(300, function() {
+      this.assert(this.called, "didn't call afterSave callback");
+    });
+  },
+
   teardown: function() {
     this.list.clobber();
     this.user.clobber();
