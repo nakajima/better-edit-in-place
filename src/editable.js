@@ -13,16 +13,16 @@ var Editable = Class.create({
     this.setupBehaviors();
   },
   
- 	// In order to parse the field correctly, it's necessary that the element
-	// you want to edit in place for have an id of (model_name)_(id)_(field_name).
-	// For example, if you want to edit the "caption" field in a "Photo" model,
-	// your id should be something like "photo_#{@photo.id}_caption".
-	// If you want to edit the "comment_body" field in a "MemberBlogPost" model,
-	// it would be: "member_blog_post_#{@member_blog_post.id}_comment_body"
- 	parseField: function() {
-		var matches = this.elementID.match(/(.*)_(\d*)_(.*)/);
+  // In order to parse the field correctly, it's necessary that the element
+  // you want to edit in place for have an id of (model_name)_(id)_(field_name).
+  // For example, if you want to edit the "caption" field in a "Photo" model,
+  // your id should be something like "photo_#{@photo.id}_caption".
+  // If you want to edit the "comment_body" field in a "MemberBlogPost" model,
+  // it would be: "member_blog_post_#{@member_blog_post.id}_comment_body"
+  parseField: function() {
+    var matches = this.elementID.match(/(.*)_(\d*)_(.*)/);
     var fieldString = matches[1] + '[' + matches[3] + ']';
-		return fieldString;
+    return fieldString;
   },
   
   // Create the editing form for the editable and inserts it after the element.
