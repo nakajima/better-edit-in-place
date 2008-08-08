@@ -168,6 +168,13 @@ new Test.Unit.Runner({
       this.assert(this.called, "didn't call afterSave callback");
     });
   },
+  
+  testShouldClobber: function() {
+    this.fail = false
+    $('list_1_title').observe('click', function() { this.fail = true }.bind(this))
+    this.list.clobber();
+    this.assert(!this.fail, "didn't unregister observers")
+  },
 
   teardown: function() {
     this.list.clobber();

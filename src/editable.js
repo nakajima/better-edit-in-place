@@ -101,9 +101,9 @@ var Editable = Class.create({
   
   // Removes editable behavior from an element.
   clobber: function() {
-    this.editForm.remove();
     this.element.stopObserving('click');
-    delete(this);
+    try { this.editForm.remove(); delete(this); }
+    catch(e) { delete(this); }
   }
 });
 
