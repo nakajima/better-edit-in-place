@@ -17,6 +17,12 @@
 
 <div id="user_2_first_name" rel="http://localhost:4567/users/2" class="editable">This is the user</div>
 
+<div id="post_3_body" rel="http://localhost:4567/posts/3" class="editable">This is the post body</div>
+
+<div id="color_4_name" rel="http://localhost:4567/colors/4" class="editable">White color</div>
+
+<div id="post_5_author" rel="http://localhost:4567/posts/5" class="editable">Mike Rotch</div>
+
 <!-- Log output -->
 <div id="testlog"> </div>
 
@@ -30,6 +36,8 @@ new Test.Unit.Runner({
     $$('form').invoke('remove');
     this.list = new Editable('list_1_title');
     this.user = new Editable('user_2_first_name');
+    this.post = new Editable('post_3_body');
+    this.color = new Editable('color_4_name');
   },
   
   testShouldGetElement: function() {
@@ -111,7 +119,7 @@ new Test.Unit.Runner({
     var properResult = "This is a new value. Dude.";
     var form = this.list.element.next('form');
     this.list.edit({ stop: Prototype.K });
-    this.list.editInput.value = properResult;
+    this.list.editField.element.value = properResult;
     this.list.save({ element: function() { return form; }, stop: Prototype.K });
     this.wait(300, function() {
       this.assertEqual(properResult, this.list.element.innerHTML);
@@ -124,11 +132,11 @@ new Test.Unit.Runner({
   testShouldCancelForm: function() {
     var form = this.list.editForm;
     this.list.edit({ stop: Prototype.K });
-    this.list.editInput.value = 'A new value';
+    this.list.editField.element.value = 'A new value';
     this.list.cancel({ stop: Prototype.K });
     this.assertVisible(this.list.element);
     this.assertNotVisible(this.list.editForm);
-    this.assertEqual(this.list.value, this.list.editInput.value);
+    this.assertEqual(this.list.value, this.list.editField.element.value);
   },
   
   testShouldHandleBehaviors: function() {
@@ -168,17 +176,100 @@ new Test.Unit.Runner({
       this.assert(this.called, "didn't call afterSave callback");
     });
   },
+
+  testShouldCallOnLoadingCallback: function() {
+    this.called = false;
+    this.list = new Editable('list_1_title', {
+        onLoading: function() {
+            this.called = true;
+        }.bind(this)
+    });    
+    this.list.save();
+    this.wait(300, function() {
+      this.assert(this.called, "didn't call onLoading callback");
+    });
+  },
+
+  testShouldCallOnCompleteCallback: function() {
+    this.called = false;
+    this.list = new Editable('list_1_title', {
+        onLoading: function() {
+            this.called = true;
+        }.bind(this)
+    });
+    this.list.save();
+    this.wait(300, function() {
+      this.assert(this.called, "didn't call onComplete callback");
+    });
+  },
   
   testShouldClobber: function() {
     this.fail = false
     $('list_1_title').observe('click', function() { this.fail = true }.bind(this))
     this.list.clobber();
-    this.assert(!this.fail, "didn't unregister observers")
+    this.assert(!this.fail, "didn't unregister observers");
+  },
+
+  testShouldSetClassNameOnInput: function() {    
+    this.list = new Editable('list_1_title', {
+        editField: {'class': 'custom'}
+    });
+    this.assert(this.list.editField.element.hasClassName('custom'), "didn't set class name on input element");
+  },
+
+  testShouldSetClassNameOnSaveButton: function() {
+    this.list = new Editable('list_1_title', {
+        submitButtonClass: 'custom'
+    });
+    this.assert(this.list.saveInput.hasClassName('custom'), "didn't set class name on save button");
+  },
+
+  testShouldSetClassNameOnCancelLink: function() {
+    this.list = new Editable('list_1_title', {
+        cancelButtonClass: 'custom'
+    });
+    this.assert(this.list.cancelLink.hasClassName('custom'), "didn't set class name on cancel button");
+  },
+
+  testShouldCreateFormWithTextAreaEditInput: function() {
+    this.post = new Editable('post_3_body', {
+        editField: {'type': 'textarea'}
+    });
+    this.assert(this.post.editForm.down('textarea'), "didn't create textarea input element");
+  },
+
+  testShouldCreateFormWithSelectEditInput: function() {
+    this.color = new Editable('color_4_name', {
+        editField: {
+            type: 'select',
+            options: [['White color', '1'], ['Black color', '2']]
+        }
+    });
+    this.assert(this.color.editForm.down('select'), "didn't create select input element");
+    this.assertEqual(2, this.color.editField.element.options.length, "didn't create options for select input element");
+  },
+
+  testShouldSaveForeignKeyAttribute: function() {
+    this.post = new Editable('post_5_author', {
+        editField: {
+            type: 'select',
+            options: [['Mike Rotch', '1'], ['I. P. Freely', '2']],
+            foreignKey: true
+        }
+    });
+    this.post.editField.element.selectedIndex = 1;
+    this.post.save();
+    
+    this.wait(300, function() {
+        this.assertEqual('I. P. Freely', this.post.element.innerHTML, "didn't set foreign key correctly");
+    });
   },
 
   teardown: function() {
     this.list.clobber();
-    this.user.clobber();
+    this.user.clobber();    
+    this.post.clobber();
+    this.color.clobber();
   }
   
 });

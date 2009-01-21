@@ -12,12 +12,43 @@ h3. Features
 * Logic lives in the JavaScript (You may consider this a feature or a flaw. I
   consider it a feature.)
 
+* Support for text input, text area and select fields
+* Support for foreign key parameters for select fields
+* Customizable. One can set: 
+** class for edit element
+** class submit and cancel buttons
+** custom functions to be called on Ajax.Request onLoading and onComplete events 
+   i.e. to set up a spinner.
+
 The better-edit-in-place script makes it easy to create AJAX edit-in-place
 fields in a RESTful web app. Note that if your approach isn't RESTful, 
 then this script won't do much for you.
 
-To make an element editable, give it the class name @editable@. Specify 
-the element's resource url as the element's @rel@ attribute, then give it
+If you have not installed this plugin using @script/plugin install@ script,
+then copy src/editable.js file to your public/javascripts folder.
+To load this file with your Rails app simply add the following line to your layout:
+
+<pre><%= javascript_include_tag 'editable' %></pre>
+
+If you're using the classic way of handling events:
+
+  document.observe('dom:loaded', function(event) {
+    Editable.setupAll();
+  });
+
+Another solution is to use event delegation:
+
+  document.delegators('click', {
+    '.editable': function(element) {
+      element.editable();
+    }
+  });
+
+To make an element editable, give it the class name @editable@. You can use different
+class name, but in this case you need to pass it to Editable.setupAll method 
+or change CSS selector if you're using event delegation.
+
+Specify the element's resource url as the element's @rel@ attribute, then give it
 an @id@ attribute that contains the name of the record's model, as well as
 the attribute to be edited. You can also add the record's id as well, so
 as not to have multiple elements with the same id in the same page. All in,
@@ -33,7 +64,7 @@ A Rails example:
 
   respond_to do |format|
     format.html # Whatever
-    format.js { render :json => @list }
+    format.json { render :json => @list }
   end
 
 h3. Using it with Rails
@@ -67,9 +98,96 @@ to JSON. To do so, put this line in an initializer, or environment.rb:
 
   ActiveRecord::Base.include_root_in_json = false
 
+h3. Customizations
+
+h4. Input types
+
+By default input text element is used. To change it to text area or select, you need to set
+editField type:
+
+  document.delegators('click', {
+    '.editable': function(element) {
+      element.editable({
+        editField: {'type': 'textarea'} // or 'select'
+      });
+    }
+  });
+
+h4. Class names
+
+Edit element class name can also be set:
+
+    element.editable({
+      editField: {
+        'type': 'textarea',
+        'class': 'editable-input'
+      }
+    });
+
+Class name can also be set for submit and cancel buttons:
+
+    element.editable({
+      submitButtonClass: 'editable-submit',
+      cancelButtonClass: 'editable-cancel'
+    });
+
+h4. Select box options
+
+For select elements you need to specify possible options:
+
+    element.editable({
+      editField: {
+        'type': 'select',
+        'options': [["black", "1"], ["gray", "2"], ["white", "3"]]
+      }
+    });
+
+To load data directly from Rails, you can use to_json method:
+
+    element.editable({
+      editField: {
+        'type': 'select',
+        'options': <%= Colors.all.map{|c| [c.name, c.id.to_s]}.to_json %>
+      }
+    });
+
+h4. Foreign keys
+
+If edited attribute is a foreign key, you need to explictly tell so:
+
+    element.editable({
+      editField: {
+        'type': 'select',
+        'options': <%= Author.all.map{|c| [c.name, c.id.to_s]}.to_json %>,
+        'foreignKey': true
+      }
+    });
+
+You also need to set #to_s method on the associated model i.e.
+
+   class Author < ActiveRecord::Base
+     def to_s
+       name
+     end
+   end
+
+This will automatically send correct id to the server and then set value of
+edit-in-place element properly.
+
+h4. Ajax.Request callbacks
+
+You can set custom callbacks for Ajax.Request onLoading and onComplete events:
+
+    element.editable({
+      onLoading: function() {alert("Loading...")};
+      onComplete: function() {alert("Request completed")};
+    });
+
 h3. TODO
 
 * Escape key should cancel (simple event handler)
 * Maybe some more options (but not too many)
+
+* Instead of adding .json to URL, set proper content-type
 
 Copyright (c) 2008 Pat Nakajima

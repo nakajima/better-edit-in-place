@@ -11,7 +11,7 @@ module Nakajima
       options.delete(:url) # Just in case it wasn't cleared already
 
       classes = options[:class].split(' ') rescue []
-      classes << 'editable'
+      classes << 'editable' if classes.empty?
       options[:class] = classes.uniq.join(' ')
 
       content_tag(options.delete(:tag), record.send(field), options)
