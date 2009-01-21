@@ -151,9 +151,9 @@ To load data directly from Rails, you can use to_json method:
       }
     });
 
-h4. Foreign keys
+h4. Foreign keys (only for select boxes)
 
-If edited attribute is a foreign key, you need to explictly tell so:
+If edited attribute is a foreign key, you need to explicitly specify it:
 
     element.editable({
       editField: {
@@ -163,6 +163,10 @@ If edited attribute is a foreign key, you need to explictly tell so:
       }
     });
 
+When using Rails helper, you need to refer to the actual object, instead of the foreign key:
+
+  edit_in_place(@post, :author)
+
 You also need to set #to_s method on the associated model i.e.
 
    class Author < ActiveRecord::Base
@@ -170,9 +174,6 @@ You also need to set #to_s method on the associated model i.e.
        name
      end
    end
-
-This will automatically send correct id to the server and then set value of
-edit-in-place element properly.
 
 h4. Ajax.Request callbacks
 
